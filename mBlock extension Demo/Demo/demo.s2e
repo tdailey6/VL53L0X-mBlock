@@ -1,0 +1,44 @@
+{
+  "extensionName": "Adafruit_V53L0X Library",
+  "description": "A Demo Extension for Arduino",
+  "version": "1.0",
+  "author": "Thomas Dailey and Friends",
+  "homepage": "https://github.com/adafruit/Adafruit_VL53L0X",
+  "sort": 0,
+  "javascriptURL": "js/VL53L0X.js",
+  "firmware": "1.0",
+  "extensionPort": 0,
+  "blockSpecs": [
+    [ "h", "VL53L0X", "runArduino" ],
+    [
+      "r",
+      "MeasureDistance",
+      "MeasureDistance",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "measure.RangeMilliMeter",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "VL53L0X",
+      "VL53L0X",
+      {
+        "setup": "",
+        "inc": "#include \"Adafruit_VL53L0X.h\"",
+        "def": "DemoClass measure; \n",
+        "work": "",
+        "loop": ""
+      }
+    ]
+  ],
+  "menus": {
+  },
+  "values": {
+  },
+  "translators": {
+  }
+}
