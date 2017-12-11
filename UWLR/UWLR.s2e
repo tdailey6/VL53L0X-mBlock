@@ -1,0 +1,298 @@
+{
+  "extensionName": "UWLR",
+  "description": "mBlock code for UWLR project",
+  "version": "1.0.0",
+  "author": "tdailey6",
+  "homepage": "https://github.com/tdailey6/UWLR",
+  "sort": 0,
+  "javascriptURL": "js/UWLR.js",
+  "firmware": "1.0",
+  "extensionPort": 0,
+  "blockSpecs": [
+    [
+      "h",
+      "UWLR",
+      "runArduino",
+      {
+        "setup": "delete temp;\npinMode(XSHUT_pin1, OUTPUT);\npinMode(XSHUT_pin2, OUTPUT);\npinMode(XSHUT_pin3, OUTPUT);\npinMode(XSHUT_pin4, OUTPUT);\npinMode(XSHUT_pin5, OUTPUT);\nSerial.begin(9600);\nWire.begin();\nSensor6.setAddress(Sensor6_newAddress);\npinMode(XSHUT_pin5,INPUT);\ndelay(10);\nSensor5.setAddress(Sensor5_newAddress);\npinMode(XSHUT_pin4, INPUT);\ndelay(10);\nSensor4.setAddress(Sensor4_newAddress);\npinMode(XSHUT_pin3, INPUT);\ndelay(10);\nSensor3.setAddress(Sensor3_newAddress);\npinMode(XSHUT_pin2, INPUT);\ndelay(10);\nSensor2.setAddress(Sensor2_newAddress);\npinMode(XSHUT_pin1,INPUT);\ndelay(10);\nSensor1.init();\nSensor2.init();\nSensor3.init();\nSensor4.init();\nSensor5.init();\nSensor6.init();\nSensor1.setTimeout(500);\nSensor2.setTimeout(500);\nSensor3.setTimeout(500);\nSensor4.setTimeout(500);\nSensor5.setTimeout(500);\nSensor6.setTimeout(500);\nSensor1.startContinuous();\nSensor2.startContinuous();\nSensor3.startContinuous();\nSensor4.startContinuous();\nSensor5.startContinuous();\nSensor6.startContinuous();\n\nimu.settings.device.commInterface = IMU_MODE_I2C;\nimu.settings.device.mAddress = LSM9DS1_M;\nimu.settings.device.agAddress = LSM9DS1_AG;",
+        "inc": "\n#include \"VL53L0X_1.h\"\n#include \"LSM9DS1.h\"\n#include \"Header1.h\"\n\n#define XSHUT_pin5 13\n#define XSHUT_pin4 12\n#define XSHUT_pin3 11\n#define XSHUT_pin2 10\n#define XSHUT_pin1 9\n\n#define Sensor2_newAddress 42\n#define Sensor3_newAddress 43\n#define Sensor4_newAddress 44\n#define Sensor5_newAddress 45\n#define Sensor6_newAddress 46\nVL53L0X Sensor1;\nVL53L0X Sensor2;\nVL53L0X Sensor3;\nVL53L0X Sensor4;\nVL53L0X Sensor5;\nVL53L0X Sensor6;\nLSM9DS1 imu;\n#define LSM9DS1_M  30\n#define LSM9DS1_AG  107\n",
+        "def": "\nint *temp = new int;\nint seed = (int)temp & 0xFFFF; // 0xd36a;\n\nbool start = 1;\nint function = 0;\nint last_l = 2;\nint last_r = 2;\nint last_c = 2;\n",
+        "work": "",
+        "loop": "if (start)\n{\nstart = 0;\nSeattle(Sensor1, Sensor2, Sensor3, Sensor4, Sensor5, Sensor6, imu, function, seed);\n}\nif (digitalRead(22)) {\nanalogWrite(2,95);\nanalogWrite(3,95);\ndelay(500);\nfunction = 1;\nSeattle(Sensor1, Sensor2, Sensor3, Sensor4, Sensor5, Sensor6, imu, function, seed);\n} else if (digitalRead(23)) {\nanalogWrite(2,95);\nanalogWrite(3,95);\ndelay(500);\nfunction = 2;\nSeattle(Sensor1, Sensor2, Sensor3, Sensor4, Sensor5, Sensor6, imu, function, seed);} else if (digitalRead(24)) {\nanalogWrite(2,95);\nanalogWrite(3,95);\ndelay(500);\nfunction = 3;\nSeattle(Sensor1, Sensor2, Sensor3, Sensor4, Sensor5, Sensor6, imu, function, seed);\n}"
+      }
+    ],
+    [
+      "r",
+      "MeasureDistance( %d.sensor )",
+      "MeasureDistance",
+      "front_center",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "Sensor{0}.readRangeContinuousMillimeters()",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "motor_left( %d.direction , %d.speed )",
+      "motor_left",
+      "forward",
+      "slow",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "if (last_l != {0})\n{\ndigitalWrite(53,{0});\nanalogWrite(2,95);\ndelay(100);\n}\nlast_l = {0};\nanalogWrite(2,{1});\n",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "motor_right( %d.direction , %d.speed )",
+      "motor_right",
+      "forward",
+      "slow",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "if (last_r != {0})\n{\ndigitalWrite(52,{0});\nanalogWrite(3,95);\ndelay(100);\n}\nlast_r = {0};\nanalogWrite(3,{1});\n",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "motor_center( %d.direction , %d.speed )",
+      "motor_center",
+      "forward",
+      "slow",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "if (last_c != {0})\n{\ndigitalWrite(51,{0});\nanalogWrite(4,95);\ndelay(100);\n}\nlast_c = {0};\nanalogWrite(4,{1});\n",
+        "loop": ""
+      }
+    ],
+    [
+      "W",
+      "Update_Accel",
+      "Update_Accel",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.readAccel();",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Accel_x",
+      "Accel_x",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcAccel(imu.ax)",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Accel_y",
+      "Accel_y",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcAccel(imu.ay)",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Accel_z",
+      "Accel_z",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcAccel(imu.az)",
+        "loop": ""
+      }
+    ],
+    [
+      "W",
+      "Update_Gyro",
+      "Update_Gyro",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.readGyro();",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Gyro_x",
+      "Gyro_x",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcGyro(imu.gx)",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Gyro_y",
+      "Gyro_y",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcGyro(imu.gy)",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Gyro_z",
+      "Gyro_z",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcGyro(imu.gz)",
+        "loop": ""
+      }
+    ],
+    [
+      "W",
+      "Update_Mag",
+      "Update_Mag",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.readMag();",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Mag_x",
+      "Mag_x",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcMag(imu.mx)",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Mag_y",
+      "Mag_y",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcMagl(imu.my)",
+        "loop": ""
+      }
+    ],
+    [
+      "R",
+      "Mag_z",
+      "Mag_z",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "imu.calcMagl(imu.mz)",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "delay( %n )",
+      "delay",
+      "time",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "delay({n});\n",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "turn left for ( %n )",
+      "turn left for",
+      "msecs",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "digitalWrite(53,1);\ndigitalWrite(52,0);\nanalogWrite(2,100);\nanalogWrite(3,100);\ndelay({0});\nanalogWrite(2,95);\nanalogWrite(3,95);\n",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "turn right for ( %n )",
+      "turn right for",
+      "msecs",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "digitalWrite(53,0);\ndigitalWrite(52,1);\nanalogWrite(2,100);\nanalogWrite(3,100);\ndelay({0});\nanalogWrite(2,95);\nanalogWrite(3,95);\n",
+        "loop": ""
+      }
+    ],
+    [
+      "w",
+      "forward for ( %n )",
+      "forward for",
+      "msecs",
+      {
+        "setup": "",
+        "inc": "",
+        "def": "",
+        "work": "digitalWrite(53,0);\ndigitalWrite(52,0);\nanalogWrite(2,100);\nanalogWrite(3,100);\ndelay({0});\nanalogWrite(2,95);\nanalogWrite(3,95);\n",
+        "loop": ""
+      }
+    ]
+  ],
+  "menus": {
+    "sensor": [ "left", "front_left", "front_center", "front_right", "right", "back" ],
+    "motor": [ "left", "right", "center" ],
+    "direction": [ "foward", "backward" ],
+    "speed": ["stop", "slow", "mid", "fast" ]
+  },
+  "values": {
+    "left": 1,
+    "front_left": 2,
+    "front_center": 3,
+    "front_right": 4,
+    "right": 5,
+    "back": 6,
+    "forward": 1,
+    "backward": 0,
+    "stop": 95,
+    "slow": 100,
+    "mid": 120,
+    "fast": 140
+  },
+  "translators": {
+  }
+}
